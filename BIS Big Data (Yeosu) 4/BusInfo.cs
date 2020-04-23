@@ -24,8 +24,9 @@ namespace BIS_Big_Data__Yeosu__4
     /// 신청후에 직전에는 어느정도 기다린 후에 해야함)
     /// </summary>
     class BusInfo
+    
     {
-        // ".\\"  ==> ".\\"
+        // "C:\\Users\\Administrator\\Documents\\"  ==> ".\\"
 
 
         private string _ServiceKey = ""; // 서버용 인증키(UTF-8)
@@ -150,8 +151,19 @@ namespace BIS_Big_Data__Yeosu__4
 
             if (IsAdministrator())
             {
+                RegistryKey hKey = null; // 32 bit-Processor가 64-bit 레지스트리에 접근 하는 경우에 사용함.
+                RegistryKey rk = null;
                 // 서브키를 얻어온다. 없으면 null
-                RegistryKey rk = Registry.LocalMachine.OpenSubKey("Software", true).OpenSubKey(regSubKey_name, true);
+                if (!Environment.Is64BitProcess && Environment.Is64BitOperatingSystem)
+                {
+                    hKey = RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, RegistryView.Registry64);
+                    rk = hKey.OpenSubKey("SOFTWARE", false).OpenSubKey(regSubKey_name, false);
+                }
+                else
+                {
+                    rk = Registry.LocalMachine.OpenSubKey("Software", false).OpenSubKey(regSubKey_name, false);
+                }
+
 
                 if (rk != null)
                 {
@@ -181,7 +193,8 @@ namespace BIS_Big_Data__Yeosu__4
                             break;
                         }
                     }
-
+                    if (hKey != null)
+                        hKey.Close();
                     rk.Close();
                 }
             }
@@ -206,13 +219,29 @@ namespace BIS_Big_Data__Yeosu__4
                 String[] Date;
                 bool isThere = false;
 
+                RegistryKey hKey = null; // 32 bit-Processor가 64-bit 레지스트리에 접근 하는 경우에 사용함.
+                RegistryKey rk = null;
                 // 서브키를 얻어온다. 없으면 null
-                RegistryKey rk = Registry.LocalMachine.OpenSubKey("Software", true).OpenSubKey(regSubKey_name, true);
-                // 없으면 서브키를 만든다.
-                if (rk == null)
+                if (!Environment.Is64BitProcess && Environment.Is64BitOperatingSystem)
                 {
-                    // 해당이름으로 서브키 생성
-                    rk = Registry.LocalMachine.CreateSubKey("Software").CreateSubKey(regSubKey_name);
+                    hKey = RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, RegistryView.Registry64);
+                    rk = hKey.OpenSubKey("SOFTWARE", true).OpenSubKey(regSubKey_name, true);
+                    // 없으면 서브키를 만든다.
+                    if (rk == null)
+                    {
+                        rk = hKey.OpenSubKey("SOFTWARE", true);
+                        rk = rk.CreateSubKey(regSubKey_name, true);
+                    }
+                }
+                else
+                {
+                    rk = Registry.LocalMachine.OpenSubKey("Software", true).OpenSubKey(regSubKey_name, true);
+                    // 없으면 서브키를 만든다.
+                    if (rk == null)
+                    {
+                        // 해당이름으로 서브키 생성
+                        rk = Registry.LocalMachine.CreateSubKey("Software").CreateSubKey(regSubKey_name);
+                    }
                 }
 
                 regListStr = rk.GetValueNames();
@@ -270,6 +299,8 @@ namespace BIS_Big_Data__Yeosu__4
                     rk.SetValue(String.Format("param{0}", temp_seq), EncodeString);
                 }
 
+                if (hKey == null)
+                    hKey.Close();
                 rk.Close();
             }
             else
@@ -299,8 +330,8 @@ namespace BIS_Big_Data__Yeosu__4
 
         public void showRegistryAll(bool setDecryption = false)
         {
-            // 서브키를 얻어온다. 없으면 null
-            RegistryKey rk = Registry.LocalMachine.OpenSubKey("Software", true).OpenSubKey(regSubKey_name, true);
+               // 서브키를 얻어온다. 없으면 null
+               RegistryKey rk = Registry.LocalMachine.OpenSubKey("Software", true).OpenSubKey(regSubKey_name, true);
 
             if (rk != null)
             {
@@ -474,7 +505,7 @@ namespace BIS_Big_Data__Yeosu__4
             else
             {
                 csvFileName += ".csv";
-                using (StreamWriter outputFile = new StreamWriter(".\\" + csvFileName, false/*no append*/, Encoding.UTF8))
+                using (StreamWriter outputFile = new StreamWriter("C:\\Users\\Administrator\\Documents\\" + csvFileName, false/*no append*/, Encoding.UTF8))
                 {
                     outputFile.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8}"
                         , _getRouteInfoAll.msgBody.ROUTE_ID, _getRouteInfoAll.msgBody.ROUTE_NAME, _getRouteInfoAll.msgBody.ROUTE_DIRECTION
@@ -505,7 +536,7 @@ namespace BIS_Big_Data__Yeosu__4
             {
                 xmlFileName += ".xml";
 
-                using (StreamWriter outputFile = new StreamWriter(".\\" + xmlFileName, false/*no append*/, Encoding.UTF8))
+                using (StreamWriter outputFile = new StreamWriter("C:\\Users\\Administrator\\Documents\\" + xmlFileName, false/*no append*/, Encoding.UTF8))
                 {
                     outputFile.Write(xml);
                     outputFile.Close();
@@ -552,8 +583,8 @@ namespace BIS_Big_Data__Yeosu__4
             , bool isWriteCSVfile = false, bool isWriteXMLfile = false
             , string csvDirPath = @"BusStop (Yeosu) CSV folder", string xmlDirPath = @"BusStop (Yeosu) XML folder")
         {
-            csvDirPath = ".\\" + csvDirPath;
-            xmlDirPath = ".\\" + xmlDirPath;
+            csvDirPath = "C:\\Users\\Administrator\\Documents\\" + csvDirPath;
+            xmlDirPath = "C:\\Users\\Administrator\\Documents\\" + xmlDirPath;
 
             Dictionary<string, string> BusStopNames = new Dictionary<string, string>();
 
@@ -799,7 +830,7 @@ namespace BIS_Big_Data__Yeosu__4
                 if (BusStopNames.Count < 1)
                     BusStopNames = GetBusStopNames(BusNames);
 
-                using (StreamWriter outputFile = new StreamWriter(".\\" + csvFile_Name, false/*no append*/, Encoding.UTF8))
+                using (StreamWriter outputFile = new StreamWriter("C:\\Users\\Administrator\\Documents\\" + csvFile_Name, false/*no append*/, Encoding.UTF8))
                 {
                     //Console.WriteLine("*****************************************************************");
                     outputFile.WriteLine("BusStop_ID,BusStop_NAME,PassingBus_Count");
@@ -864,7 +895,7 @@ namespace BIS_Big_Data__Yeosu__4
 
         Dictionary<string, string> BusStopNames = new Dictionary<string, string>();
         private String csvDirPath;
-        public Dictionary<string, Dictionary<string, List<XmlNode>>> MakeBusesArrivalHistory(string xml, ref Dictionary<string, List<XmlNode>> rstop, bool isWriteCSVFile = true)
+        public Dictionary<string, Dictionary<string, List<XmlNode>>> MakeBusesArrivalHistory(string xml, ref Dictionary<string, List<XmlNode>> rstop, bool isWriteCSVFile=true)
         {
             XmlNodeList xml_node;
             Dictionary<string, List<XmlNode>> QueryRstop = new Dictionary<string, List<XmlNode>>();
@@ -898,7 +929,7 @@ namespace BIS_Big_Data__Yeosu__4
             int memory_rstop;
             int count;
             int query_rstop;
-            csvDirPath = ".\\"
+            csvDirPath = "C:\\Users\\Administrator\\Documents\\"
                 + String.Format("{0}\\{1}년 {2}월", "Bus Information for Big Data", DateTime.Now.Year, DateTime.Now.Month);
             csvFileName = String.Format("{0}\\{1} 도착정보 (STOP_ID - {2}, {3}-{4}-{5} {6}).csv"
                 , csvDirPath
@@ -935,22 +966,22 @@ namespace BIS_Big_Data__Yeosu__4
                 FileInfo fileInfo = new FileInfo(csvFileName);
                 if (!fileInfo.Exists)
                 {
-                    if (isWriteCSVFile)
-                        using (StreamWriter outputFile = new StreamWriter(csvFileName, false, Encoding.UTF8))
-                        {
-                            outputFile.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}"
-                                , _getArrInfoByStopID.msgBody.ROUTE_ID //"ROUTE ID"
-                                , _getArrInfoByStopID.msgBody.ROUTE_NAME //"ROUTE NAME"
-                                , _getArrInfoByStopID.msgBody.RSTOP //"RSTOP"
-                                , _getArrInfoByStopID.msgBody.STOP_ID //"CP_STOP_ID"
-                                , _getArrInfoByStopID.msgBody.STOP_NAME //"CP_STOP_NAME"
-                                , "S-OPERATION-COUNT"
-                                , _getArrInfoByStopID.msgBody.ALLOC_TIME // "ALLOC_TIME"
-                                , "Now-Time"
-                                , _getArrInfoByStopID.msgBody.START_TIME //"START TIME"
-                                , _getArrInfoByStopID.msgBody.END_TIME //"END TIME"
-                                , "WRITE-CODE");
-                        }
+                    if(isWriteCSVFile)
+                    using (StreamWriter outputFile = new StreamWriter(csvFileName, false, Encoding.UTF8))
+                    {
+                        outputFile.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}"
+                            , _getArrInfoByStopID.msgBody.ROUTE_ID //"ROUTE ID"
+                            , _getArrInfoByStopID.msgBody.ROUTE_NAME //"ROUTE NAME"
+                            , _getArrInfoByStopID.msgBody.RSTOP //"RSTOP"
+                            , _getArrInfoByStopID.msgBody.STOP_ID //"CP_STOP_ID"
+                            , _getArrInfoByStopID.msgBody.STOP_NAME //"CP_STOP_NAME"
+                            , "S-OPERATION-COUNT"
+                            , _getArrInfoByStopID.msgBody.ALLOC_TIME // "ALLOC_TIME"
+                            , "Now-Time"
+                            , _getArrInfoByStopID.msgBody.START_TIME //"START TIME"
+                            , _getArrInfoByStopID.msgBody.END_TIME //"END TIME"
+                            , "WRITE-CODE");
+                    }
                 }
             }
 
@@ -975,37 +1006,37 @@ namespace BIS_Big_Data__Yeosu__4
 
             if (isWriteCSVFile)
                 using (StreamWriter outputFile = new StreamWriter(csvFileName, true, Encoding.UTF8))
+            {
+                foreach (KeyValuePair<string, List<XmlNode>> keyValuePair in QueryRstop) // 버스도착정보 업데이트
                 {
-                    foreach (KeyValuePair<string, List<XmlNode>> keyValuePair in QueryRstop) // 버스도착정보 업데이트
+                    if (rstop.ContainsKey(keyValuePair.Key)) // 기존에 기억하고 있는 노선번호
                     {
-                        if (rstop.ContainsKey(keyValuePair.Key)) // 기존에 기억하고 있는 노선번호
+                        List<int> remove_reservation_rstop = new List<int>();
+
+                        // 기존 회차 노선들
+                        for (int i = 0, index = 0, Count = rstop[keyValuePair.Key].Count/*keyValuePair.Value.Count*/; i < Count; i++)
                         {
-                            List<int> remove_reservation_rstop = new List<int>();
+                            //rstop[keyValuePair.Key][i][getArrInfoByStopID.msgBody.ROUTE_ID].InnerText = "325000001" // 2번;
+                            /* DEBUG1234
+                             * List<XmlNode> rstop_keyValuePair_Key = rstop[keyValuePair.Key];
+                            int cc = rstop_keyValuePair_Key.Count;
+                            XmlNode xn11 = rstop_keyValuePair_Key[i];
+                            List<XmlNode> xmlNodes11 = keyValuePair.Value;*/
+                            index = Define_WhichClosestRoute(rstop[keyValuePair.Key][i], keyValuePair.Value);
 
-                            // 기존 회차 노선들
-                            for (int i = 0, index = 0, Count = rstop[keyValuePair.Key].Count/*keyValuePair.Value.Count*/; i < Count; i++)
+
+                            if (index < 0) // Query를 사용하지 않는 구문
                             {
-                                //rstop[keyValuePair.Key][i][getArrInfoByStopID.msgBody.ROUTE_ID].InnerText = "325000001" // 2번;
-                                /* DEBUG1234
-                                 * List<XmlNode> rstop_keyValuePair_Key = rstop[keyValuePair.Key];
-                                int cc = rstop_keyValuePair_Key.Count;
-                                XmlNode xn11 = rstop_keyValuePair_Key[i];
-                                List<XmlNode> xmlNodes11 = keyValuePair.Value;*/
-                                index = Define_WhichClosestRoute(rstop[keyValuePair.Key][i], keyValuePair.Value);
+                                // 해당 정류장을 지나감(해당 정류장을 지나가면 해당 회자의 노선번호가 사라짐)
+                                // 도착한 노선 삭제
 
-
-                                if (index < 0) // Query를 사용하지 않는 구문
+                                // 비고 : 기점, 종점 같은 경우(아직 운행전이기 때문에, 계산할 필요가 없음) - 처리 안함.
+                                if (ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.RSTOP])) == 1)
                                 {
-                                    // 해당 정류장을 지나감(해당 정류장을 지나가면 해당 회자의 노선번호가 사라짐)
-                                    // 도착한 노선 삭제
-
-                                    // 비고 : 기점, 종점 같은 경우(아직 운행전이기 때문에, 계산할 필요가 없음) - 처리 안함.
-                                    if (ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.RSTOP])) == 1)
-                                    {
-                                        // WriteLine(도착-4)
-                                        BusStop_keyValuePair = Get_RSTOP_distance(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])
-                                            , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.STOP_ID]))
-                                            , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.RSTOP])));
+                                    // WriteLine(도착-4)
+                                    BusStop_keyValuePair = Get_RSTOP_distance(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])
+                                        , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.STOP_ID]))
+                                        , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.RSTOP])));
 
 
                                         if (isWriteCSVFile)
@@ -1034,55 +1065,55 @@ namespace BIS_Big_Data__Yeosu__4
                                         , rstop[keyValuePair.Key].Count);
                                     Console.ForegroundColor = consoleColor;
 #endif
-                                        //rstop[keyValuePair.Key].RemoveAt(i); // 해당 노선에서 i번째에 있는 노선 제거
-                                        remove_reservation_rstop.Add(i);
-                                        //if (rstop[keyValuePair.Key].Count < 1)
-                                        //    rstop.Remove(keyValuePair.Key); // 해당 노선에 대한 정보가 없을 경우, Dictionary에서 해당 노선 제거
-                                        //if (keyValuePair.Value.Count > 0)
-                                        //    keyValuePair.Value.RemoveAt(i); // 사용한 query 제거 -> 도착하면 해당 정류장에 대한 Query는 사라지기 때문에, Query를 사용하지 않은 것과 같음
+                                    //rstop[keyValuePair.Key].RemoveAt(i); // 해당 노선에서 i번째에 있는 노선 제거
+                                    remove_reservation_rstop.Add(i);
+                                    //if (rstop[keyValuePair.Key].Count < 1)
+                                    //    rstop.Remove(keyValuePair.Key); // 해당 노선에 대한 정보가 없을 경우, Dictionary에서 해당 노선 제거
+                                    //if (keyValuePair.Value.Count > 0)
+                                    //    keyValuePair.Value.RemoveAt(i); // 사용한 query 제거 -> 도착하면 해당 정류장에 대한 Query는 사라지기 때문에, Query를 사용하지 않은 것과 같음
 
-                                        //continue;
+                                    //continue;
 
-                                        if (results.ContainsKey("도착"))
-                                        {
-                                            if (results["도착"].ContainsKey(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])))
-                                                results["도착"][ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])].Add(rstop[keyValuePair.Key][i]/*동시에 운행되고 있는 회차들*/);
-                                            else
-                                            {
-                                                List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
-                                                OneCycleRouteLists.Add(rstop[keyValuePair.Key][i]);
-
-                                                results["도착"].Add(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
-                                            }
-                                        }
+                                    if (results.ContainsKey("도착"))
+                                    {
+                                        if (results["도착"].ContainsKey(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])))
+                                            results["도착"][ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])].Add(rstop[keyValuePair.Key][i]/*동시에 운행되고 있는 회차들*/);
                                         else
                                         {
                                             List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
                                             OneCycleRouteLists.Add(rstop[keyValuePair.Key][i]);
 
-                                            Dictionary<string, List<XmlNode>> RouteList = new Dictionary<string, List<XmlNode>>(); // 복수의 ROUTE_ID들이 동시에 운행되고 있는 회차들에 대한 정보.
-                                            RouteList.Add(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
-
-                                            results.Add("도착", RouteList);
+                                            results["도착"].Add(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
                                         }
                                     }
-                                }
-                                else // Query를 사용하는 구문
-                                     // index : Query용 keyValuePair에서 인덱스로 사용하기위한 rstop[keyValuePair.Key]의 정보를 대응하기 위한 인덱스(예: 2번버스 32회차)
-                                {
-                                    // 운행되고 있는 한 회차의 노선 수정
-                                    memory_rstop = ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.RSTOP]));
-                                    count = keyValuePair.Value.Count;
-                                    query_rstop = ConvertStrToNaturalNumber(ConvertNodeToString(keyValuePair.Value[index][_getArrInfoByStopID.msgBody.RSTOP]));
-
-                                    if (memory_rstop != query_rstop)
+                                    else
                                     {
-                                        rstop[keyValuePair.Key][i] = keyValuePair.Value[index]; // RSTOP 업데이트
+                                        List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
+                                        OneCycleRouteLists.Add(rstop[keyValuePair.Key][i]);
 
-                                        // WriteLine(2)
-                                        BusStop_keyValuePair = Get_RSTOP_distance(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])
-                                            , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.STOP_ID]))
-                                            , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.RSTOP])));
+                                        Dictionary<string, List<XmlNode>> RouteList = new Dictionary<string, List<XmlNode>>(); // 복수의 ROUTE_ID들이 동시에 운행되고 있는 회차들에 대한 정보.
+                                        RouteList.Add(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
+
+                                        results.Add("도착", RouteList);
+                                    }
+                                }
+                            }
+                            else // Query를 사용하는 구문
+                            // index : Query용 keyValuePair에서 인덱스로 사용하기위한 rstop[keyValuePair.Key]의 정보를 대응하기 위한 인덱스(예: 2번버스 32회차)
+                            {
+                                // 운행되고 있는 한 회차의 노선 수정
+                                memory_rstop = ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.RSTOP]));
+                                count = keyValuePair.Value.Count;
+                                query_rstop = ConvertStrToNaturalNumber(ConvertNodeToString(keyValuePair.Value[index][_getArrInfoByStopID.msgBody.RSTOP]));
+
+                                if (memory_rstop != query_rstop)
+                                {
+                                    rstop[keyValuePair.Key][i] = keyValuePair.Value[index]; // RSTOP 업데이트
+
+                                    // WriteLine(2)
+                                    BusStop_keyValuePair = Get_RSTOP_distance(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])
+                                        , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.STOP_ID]))
+                                        , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.RSTOP])));
 
 
                                         if (isWriteCSVFile)
@@ -1112,50 +1143,50 @@ namespace BIS_Big_Data__Yeosu__4
                                     Console.ForegroundColor = consoleColor;
 #endif
 
-                                        if (results.ContainsKey("이동"))
-                                        {
-                                            if (results["이동"].ContainsKey(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])))
-                                                results["이동"][ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])].Add(rstop[keyValuePair.Key][i]/*동시에 운행되고 있는 회차들*/);
-                                            else
-                                            {
-                                                List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
-                                                OneCycleRouteLists.Add(rstop[keyValuePair.Key][i]);
-
-                                                results["이동"].Add(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
-                                            }
-                                        }
+                                    if (results.ContainsKey("이동"))
+                                    {
+                                        if (results["이동"].ContainsKey(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])))
+                                            results["이동"][ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID])].Add(rstop[keyValuePair.Key][i]/*동시에 운행되고 있는 회차들*/);
                                         else
                                         {
                                             List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
                                             OneCycleRouteLists.Add(rstop[keyValuePair.Key][i]);
 
-                                            Dictionary<string, List<XmlNode>> RouteList = new Dictionary<string, List<XmlNode>>(); // 복수의 ROUTE_ID들이 동시에 운행되고 있는 회차들에 대한 정보.
-                                            RouteList.Add(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
-
-                                            results.Add("이동", RouteList);
+                                            results["이동"].Add(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
                                         }
                                     }
+                                    else
+                                    {
+                                        List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
+                                        OneCycleRouteLists.Add(rstop[keyValuePair.Key][i]);
 
-                                    if (keyValuePair.Value.Count > 0)
-                                        keyValuePair.Value.RemoveAt(index); // 해당 Query는 사용완료된 데이터로써 나중에 사용할 필요가 없는 데이터.
+                                        Dictionary<string, List<XmlNode>> RouteList = new Dictionary<string, List<XmlNode>>(); // 복수의 ROUTE_ID들이 동시에 운행되고 있는 회차들에 대한 정보.
+                                        RouteList.Add(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
+
+                                        results.Add("이동", RouteList);
+                                    }
                                 }
+
+                                if (keyValuePair.Value.Count > 0)
+                                    keyValuePair.Value.RemoveAt(index); // 해당 Query는 사용완료된 데이터로써 나중에 사용할 필요가 없는 데이터.
                             }
+                        }
 
-                            // 기존 회차에서 삭제 예약한 것들 시행(삭제).
-                            foreach (int removeIndex in remove_reservation_rstop)
-                                rstop[keyValuePair.Key].RemoveAt(removeIndex); // 해당 노선에서 i번째에 있는 노선 제거
-                                                                               // (rstop[keyValuePair.Key] - List형을 for문의 i라는 인덱스로 접근함으로써 발생하는 문제
-                                                                               // : i번째 인덱스의 데이터를 삭제를 하게 되면 n번째,n-1번째 등에 접근할 수가 없기 때문에 따로 기억해두었다가 삭제하는 구문이다)
+                        // 기존 회차에서 삭제 예약한 것들 시행(삭제).
+                        foreach (int removeIndex in remove_reservation_rstop)
+                            rstop[keyValuePair.Key].RemoveAt(removeIndex); // 해당 노선에서 i번째에 있는 노선 제거
+                                                                           // (rstop[keyValuePair.Key] - List형을 for문의 i라는 인덱스로 접근함으로써 발생하는 문제
+                                                                           // : i번째 인덱스의 데이터를 삭제를 하게 되면 n번째,n-1번째 등에 접근할 수가 없기 때문에 따로 기억해두었다가 삭제하는 구문이다)
 
-                            // 새 회차의 노선 추가
-                            for (int i = 0; i < keyValuePair.Value.Count; i++)
-                            {
-                                rstop[keyValuePair.Key].Add(keyValuePair.Value[i]);
+                        // 새 회차의 노선 추가
+                        for (int i = 0; i < keyValuePair.Value.Count; i++)
+                        {
+                            rstop[keyValuePair.Key].Add(keyValuePair.Value[i]);
 
-                                // WriteLine(3)
-                                BusStop_keyValuePair = Get_RSTOP_distance(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID])
-                                                , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.STOP_ID]))
-                                                , ConvertStrToNaturalNumber(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.RSTOP])));
+                            // WriteLine(3)
+                            BusStop_keyValuePair = Get_RSTOP_distance(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID])
+                                            , ConvertStrToNaturalNumber(ConvertNodeToString(rstop[keyValuePair.Key][i][_getArrInfoByStopID.msgBody.STOP_ID]))
+                                            , ConvertStrToNaturalNumber(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.RSTOP])));
 
 
                                 if (isWriteCSVFile)
@@ -1186,44 +1217,44 @@ namespace BIS_Big_Data__Yeosu__4
                             Console.ForegroundColor = consoleColor;
 #endif
 
-                                if (results.ContainsKey("회차추가"))
-                                {
-                                    if (results["회차추가"].ContainsKey(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID])))
-                                        results["회차추가"][ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID])].Add(keyValuePair.Value[i]/*동시에 운행되고 있는 회차들*/);
-                                    else
-                                    {
-                                        List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
-                                        OneCycleRouteLists.Add(keyValuePair.Value[i]);
-
-                                        results["회차추가"].Add(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
-                                    }
-                                }
+                            if (results.ContainsKey("회차추가"))
+                            {
+                                if (results["회차추가"].ContainsKey(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID])))
+                                    results["회차추가"][ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID])].Add(keyValuePair.Value[i]/*동시에 운행되고 있는 회차들*/);
                                 else
                                 {
                                     List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
                                     OneCycleRouteLists.Add(keyValuePair.Value[i]);
 
-                                    Dictionary<string, List<XmlNode>> RouteList = new Dictionary<string, List<XmlNode>>(); // 복수의 ROUTE_ID들이 동시에 운행되고 있는 회차들에 대한 정보.
-                                    RouteList.Add(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
-
-                                    results.Add("회차추가", RouteList);
+                                    results["회차추가"].Add(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
                                 }
                             }
-
-
-                            if (rstop[keyValuePair.Key].Count < 1)
-                                rstop.Remove(keyValuePair.Key); // 해당 노선에 대한 정보가 없을 경우, Dictionary에서 해당 노선 제거
-                        }
-                        else  // 새로 본 노선번호
-                        {
-                            rstop.Add(keyValuePair.Key, keyValuePair.Value);
-
-                            // WriteLine(1)
-                            foreach (XmlNode xn in keyValuePair.Value)
+                            else
                             {
-                                BusStop_keyValuePair = Get_RSTOP_distance(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID])
-                                                , ConvertStrToNaturalNumber(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.STOP_ID]))
-                                                , ConvertStrToNaturalNumber(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.RSTOP])));
+                                List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
+                                OneCycleRouteLists.Add(keyValuePair.Value[i]);
+
+                                Dictionary<string, List<XmlNode>> RouteList = new Dictionary<string, List<XmlNode>>(); // 복수의 ROUTE_ID들이 동시에 운행되고 있는 회차들에 대한 정보.
+                                RouteList.Add(ConvertNodeToString(keyValuePair.Value[i][_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
+
+                                results.Add("회차추가", RouteList);
+                            }
+                        }
+
+
+                        if (rstop[keyValuePair.Key].Count < 1)
+                            rstop.Remove(keyValuePair.Key); // 해당 노선에 대한 정보가 없을 경우, Dictionary에서 해당 노선 제거
+                    }
+                    else  // 새로 본 노선번호
+                    {
+                        rstop.Add(keyValuePair.Key, keyValuePair.Value);
+
+                        // WriteLine(1)
+                        foreach (XmlNode xn in keyValuePair.Value)
+                        {
+                            BusStop_keyValuePair = Get_RSTOP_distance(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID])
+                                            , ConvertStrToNaturalNumber(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.STOP_ID]))
+                                            , ConvertStrToNaturalNumber(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.RSTOP])));
 
 
 
@@ -1254,36 +1285,36 @@ namespace BIS_Big_Data__Yeosu__4
                             Console.ForegroundColor = consoleColor;
 #endif
 
-                                if (results.ContainsKey("노선추가"))
-                                {
-                                    if (results["노선추가"].ContainsKey(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID])))
-                                        results["노선추가"][ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID])].Add(xn/*동시에 운행되고 있는 회차들*/);
-                                    else
-                                    {
-                                        List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
-                                        OneCycleRouteLists.Add(xn);
-
-                                        results["노선추가"].Add(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
-                                    }
-                                }
+                            if (results.ContainsKey("노선추가"))
+                            {
+                                if (results["노선추가"].ContainsKey(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID])))
+                                    results["노선추가"][ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID])].Add(xn/*동시에 운행되고 있는 회차들*/);
                                 else
                                 {
                                     List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
                                     OneCycleRouteLists.Add(xn);
 
-                                    Dictionary<string, List<XmlNode>> RouteList = new Dictionary<string, List<XmlNode>>(); // 복수의 ROUTE_ID들이 동시에 운행되고 있는 회차들에 대한 정보.
-                                    RouteList.Add(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
-
-                                    results.Add("노선추가", RouteList);
+                                    results["노선추가"].Add(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
                                 }
+                            }
+                            else
+                            {
+                                List<XmlNode> OneCycleRouteLists = new List<XmlNode>(); // 동시에 운행되고 있는 회차들.
+                                OneCycleRouteLists.Add(xn);
+
+                                Dictionary<string, List<XmlNode>> RouteList = new Dictionary<string, List<XmlNode>>(); // 복수의 ROUTE_ID들이 동시에 운행되고 있는 회차들에 대한 정보.
+                                RouteList.Add(ConvertNodeToString(xn[_getArrInfoByStopID.msgBody.ROUTE_ID]), OneCycleRouteLists);
+
+                                results.Add("노선추가", RouteList);
                             }
                         }
                     }
+                }
 
 #if DEBUG1234
                 Console.WriteLine("\n\n**************************************************************\n");
 #endif
-                }
+            }
 
             return results;
         }
@@ -1450,7 +1481,7 @@ namespace BIS_Big_Data__Yeosu__4
             , Dictionary<string, List<KeyValuePair<string, string>>> passingBusStop
             , string DirPath = "해당 정류장을 경유하는 버스 목록", bool isWriteCSVFile = false)
         {
-            DirPath = ".\\" + DirPath;
+            DirPath = "C:\\Users\\Administrator\\Documents\\" + DirPath;
             DirectoryInfo di = new DirectoryInfo(DirPath);
             if (di.Exists == false)
             {
@@ -1462,17 +1493,17 @@ namespace BIS_Big_Data__Yeosu__4
                 //Console.WriteLine("{0},{1},{2}", kv.Key, BusStopNames[kv.Key], kv.Value.Count);
                 string filename = DirPath + "\\" + BusStopNames[kv.Key] + "  (Bus Stop ID " + kv.Key + ").csv";
 
-
-                if (isWriteCSVFile)
+                
+                    if(isWriteCSVFile)
                     using (StreamWriter outputFile = new StreamWriter(filename, false/*no append*/, Encoding.UTF8))
-                    {
-                        outputFile.WriteLine("Bus ID,Bus Name");
+                {
+                    outputFile.WriteLine("Bus ID,Bus Name");
 
-                        foreach (KeyValuePair<string, string> bus in kv.Value)
-                        {
-                            outputFile.WriteLine("{0},{1}", bus.Key, bus.Value);
-                        }
+                    foreach (KeyValuePair<string, string> bus in kv.Value)
+                    {
+                        outputFile.WriteLine("{0},{1}", bus.Key, bus.Value);
                     }
+                }
             }
         }
 
@@ -1956,13 +1987,13 @@ namespace BIS_Big_Data__Yeosu__4
 
             HttpWebResponse response1 = request1.GetResponse() as HttpWebResponse, response2 = request2.GetResponse() as HttpWebResponse;
 
-            using (StreamWriter outputFile = new StreamWriter(".\\" + String.Format("버스(ROUTE ID - {0}, {1}) 현재 위치.xml", ROUTE_ID, Count), false/*no append*/, Encoding.UTF8))
+            using (StreamWriter outputFile = new StreamWriter("C:\\Users\\Administrator\\Documents\\" + String.Format("버스(ROUTE ID - {0}, {1}) 현재 위치.xml", ROUTE_ID, Count), false/*no append*/, Encoding.UTF8))
             {
                 StreamReader reader = new StreamReader(response1.GetResponseStream());
                 outputFile.WriteLine((XML_Pos = reader.ReadToEnd()));
             }
             if (STOP_ID != null)
-                using (StreamWriter outputFile = new StreamWriter(".\\" + String.Format("정류장(STOP ID - {0}, {1}) 도착정보.xml", STOP_ID, Count), false/*no append*/, Encoding.UTF8))
+                using (StreamWriter outputFile = new StreamWriter("C:\\Users\\Administrator\\Documents\\" + String.Format("정류장(STOP ID - {0}, {1}) 도착정보.xml", STOP_ID, Count), false/*no append*/, Encoding.UTF8))
                 {
                     StreamReader reader = new StreamReader(response2.GetResponseStream());
                     outputFile.WriteLine(reader.ReadToEnd());
@@ -2178,7 +2209,7 @@ namespace BIS_Big_Data__Yeosu__4
                 return false;
             }
 
-            csvDirPath = ".\\"
+            csvDirPath = "C:\\Users\\Administrator\\Documents\\"
                 + String.Format("{0}\\{1}년 {2}월\\Sorted CSV Files\\", "Bus Information for Big Data", DateTime.Now.Year, DateTime.Now.Month);
             fileName = fileName.Substring(fileName.LastIndexOf('\\') + 1);
             fileName = fileName.Replace(".csv", "");
@@ -2407,7 +2438,7 @@ namespace BIS_Big_Data__Yeosu__4
 
             CSV_FileName += ".csv";
 
-            using (StreamWriter outputFile = new StreamWriter(".\\" + CSV_FileName, false, Encoding.UTF8))
+            using (StreamWriter outputFile = new StreamWriter("C:\\Users\\Administrator\\Documents\\" + CSV_FileName, false, Encoding.UTF8))
 
             {
                 file = new System.IO.StreamReader(fileNameLists[0]);
