@@ -20,27 +20,22 @@ namespace BIS_Big_Data__Yeosu__4
     {
         static void Main(string[] args)
         {
-            // BusInfo bis = new BusInfo("SjqlqOXW0YwFcP0LMfjIcC9XBixz5HMK7MCjjrvcuIayo6FYYeldTSr5fxOV9WTZS1s51eTiCHae7Mz12stpXQ%3D%3D"); // AZURE
-             BusInfo bis = new BusInfo("PzH7U%2Ft9YwRg7xd4mSZ21SxvEWZw5KB5k5rsxCvqTvDoLeAnkUBDanSNSaieXaUMHonBRdltamFvCg%2BxdS%2BzfA%3D%3D"); // 랩실
-            // BusInfo bis = new BusInfo("URJI2AYbycz5g4cPenp3in%2FfxWydYfh52%2BeehYRC5Op3JSvUcKF3aXodUZYPLkR1xu6Vr%2F13Af6S0xXeYYv5CA%3D%3D"); // UX50K
+             BusInfo bis = new BusInfo("발급받은 ServiceKey"); // 랩실
 
             //checkIntegrity("325000846 도착정보 (STOP_ID - 325000846, 2020-3-23).csv");
 
-            // MakeHistoryFromXML("2020년 3월\\이순신광장 도착정보 도착정보 (STOP_ID - 325000846, 2020-3-24).csv (2020년 3월 24일)", ref bis);
-            //MakeHistoryFromXML("2020년 3월\\한화생명 도착정보 도착정보 (STOP_ID - 325000843, 2020-3-24).csv (2020년 3월 24일)", ref bis);
-
-            bis.startTime = new Time(4, 00);
-            bis.total_available_Connection_count = 20000;Console.WriteLine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            bis.startTime = new Time(4, 00); // 시작시간 수정
+            bis.total_available_Connection_count = 20000; // 1일당 최대 연결할 수 있는 횟수 수정
 
 
-            Task taskA = bis.MakeTask_ArrivalHistory("325000846"); // 이순신광장 도착정보
-            Task taskB = bis.MakeTask_ArrivalHistory("325000843"); // 한화생명 도착정보
+            Task taskA = bis.MakeTask_ArrivalHistory("325000846"); // 이순신광장 도착정보 Task 생성
+            Task taskB = bis.MakeTask_ArrivalHistory("325000843"); // 한화생명 도착정보 Task 생성
 
             taskA.Start();
             taskB.Start();
-
-            Thread.Sleep(10000);
-
+            
+            // bis.Stop_TaskArrivalHistory(); // 시작한 Task들 동작중지 - real_intervalTime * TaskCount만큼 대기한 후에 연결하는 구조때문에, 즉시 중단되지 않고 일정시간 대기후에 정지함.
+            
             taskA.Wait();
             taskB.Wait();
         }
