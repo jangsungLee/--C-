@@ -24,7 +24,6 @@ namespace BIS_Big_Data__Yeosu__4
     /// 신청후에 직전에는 어느정도 기다린 후에 해야함)
     /// </summary>
     class BusInfo
-    
     {
         // "C:\\Users\\Administrator\\Documents\\"  ==> ".\\"
 
