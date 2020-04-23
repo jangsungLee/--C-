@@ -1,0 +1,7 @@
+C:\Users\Administrator\source\repos\BIS Big Data (Yeosu) 4\BIS Big Data (Yeosu) 4\obj\Debug\BIS Big Data (Yeosu) 4.csprojAssemblyReference.cache
+C:\Users\Administrator\source\repos\BIS Big Data (Yeosu) 4\BIS Big Data (Yeosu) 4\obj\Debug\BIS Big Data (Yeosu) 4.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\source\repos\BIS Big Data (Yeosu) 4\BIS Big Data (Yeosu) 4\bin\Debug\BIS Big Data (Yeosu) 4.exe.config
+C:\Users\Administrator\source\repos\BIS Big Data (Yeosu) 4\BIS Big Data (Yeosu) 4\bin\Debug\BIS Big Data (Yeosu) 4.exe
+C:\Users\Administrator\source\repos\BIS Big Data (Yeosu) 4\BIS Big Data (Yeosu) 4\bin\Debug\BIS Big Data (Yeosu) 4.pdb
+C:\Users\Administrator\source\repos\BIS Big Data (Yeosu) 4\BIS Big Data (Yeosu) 4\obj\Debug\BIS Big Data (Yeosu) 4.exe
+C:\Users\Administrator\source\repos\BIS Big Data (Yeosu) 4\BIS Big Data (Yeosu) 4\obj\Debug\BIS Big Data (Yeosu) 4.pdb

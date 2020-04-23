@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIS Big Data (Yeosu) 4", "BIS Big Data (Yeosu) 4\BIS Big Data (Yeosu) 4.csproj", "{5E3367A6-74A4-4E77-A899-A19CB6BB2F18}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E3367A6-74A4-4E77-A899-A19CB6BB2F18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E3367A6-74A4-4E77-A899-A19CB6BB2F18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E3367A6-74A4-4E77-A899-A19CB6BB2F18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E3367A6-74A4-4E77-A899-A19CB6BB2F18}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2F22245E-484D-4945-80FC-EE09EAE84D84}
+	EndGlobalSection
+EndGlobal
