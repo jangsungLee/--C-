@@ -1,7 +1,7 @@
 ﻿#define NoSort
 
-using BIS_Big_Data__Yeosu__이순신광장.GetXMLClass.Attributes;
-using BIS_Big_Data__Yeosu__이순신광장.GetXMLClass.Attributes.BusOperationInfo_ClassMembers;
+using BIS_Big_Data__Yeosu__4.GetXMLClass.Attributes;
+using BIS_Big_Data__Yeosu__4.GetXMLClass.Attributes.BusOperationInfo_ClassMembers;
 
 using Microsoft.Win32;
 using System;
@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace BIS_Big_Data__Yeosu__이순신광장
+namespace BIS_Big_Data__Yeosu__4
 {
     class BusInfo
     {
